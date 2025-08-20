@@ -1,3 +1,9 @@
+UNRELEASED
+=======================
+
+* S3QL is now compatible with Python 3.13 and newer OpenSSL versions.
+  This makes S3QL compatible with e.g. Debian trixie.
+
 S3QL 5.3.0 (2025-05-10)
 =======================
 
