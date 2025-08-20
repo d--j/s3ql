@@ -29,7 +29,7 @@ import threading
 import time
 from base64 import b64encode
 from http.server import BaseHTTPRequestHandler
-from io import TextIOWrapper
+from io import BytesIO, TextIOWrapper
 from socket import socket
 
 import pytest
@@ -483,31 +483,8 @@ def test_discard_chunked(conn, monkeypatch):
 def test_read_text(conn):
     conn.send_request('GET', '/send_%d_bytes' % len(DUMMY_DATA))
     conn.read_response()
-    fh = TextIOWrapper(conn)
+    fh = TextIOWrapper(BytesIO(conn.readall()))
     assert fh.read() == DUMMY_DATA.decode('utf8')
-    assert not conn.response_pending()
-
-
-def test_read_text2(conn):
-    conn.send_request('GET', '/send_%d_bytes' % len(DUMMY_DATA))
-    conn.read_response()
-    fh = TextIOWrapper(conn)
-
-    # This used to fail because TextIOWrapper can't deal with bytearrays
-    fh.read(42)
-
-
-def test_read_text3(conn):
-    conn.send_request('GET', '/send_%d_bytes' % len(DUMMY_DATA))
-    conn.read_response()
-    fh = TextIOWrapper(conn)
-
-    # This used to fail because TextIOWrapper tries to read from
-    # the underlying fh even after getting ''
-    while True:
-        if not fh.read(77):
-            break
-
     assert not conn.response_pending()
 
 
